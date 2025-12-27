@@ -1,274 +1,293 @@
-<!doctype html>
-<html lang="en" dir="ltr">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Crit Value Calculator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artifact Value Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* تنسيقات رسائل التنبيه والتحذير */
+        .alert-box {
+            padding: 12px 15px;
+            padding-left: 30px; 
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            line-height: 1.5;
+            position: relative;
+        }
+        
+        /* لضبط الاتجاه تلقائياً بناءً على اللغة */
+        .rtl {
+            text-align: right;
+            direction: rtl;
+        }
+        .ltr {
+            text-align: left;
+            direction: ltr;
+        }
 
-  <style>
-    :root {
-      font-family: Inter, system-ui, Arial;
-      --primary: #0ea5a4;
-      --bg: #f0f4f8;
-      --card-bg: #ffffff;
-      --text-dark: #0f172a;
-      --best: #fde68a;
-    }
+        .alert-info {
+            background-color: #e3f2fd;
+            color: #084298;
+            border: 1px solid #b6d4fe;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #664d03;
+            border: 1px solid #ffecb5;
+        }
 
-    body {
-      background: var(--bg);
-      display: flex;
-      gap: 20px;
-      padding: 20px;
-      margin: 0;
-      min-height: 100vh;
-      justify-content: center;
-      align-items: flex-start;
-    }
+        .close-alert {
+            position: absolute;
+            top: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            line-height: 1;
+        }
+        /* زر الإغلاق يمين في الإنجليزي ويسار في العربي */
+        .ltr .close-alert { right: 10px; }
+        .rtl .close-alert { left: 10px; }
 
-    .card, .history-card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      box-shadow: 0 8px 24px rgba(2, 6, 23, 0.15);
-      padding: 24px;
-    }
+        .close-alert:hover { opacity: 1; }
 
-    .card {
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
-    }
-
-    h1, h2 {
-      margin-bottom: 14px;
-      color: var(--text-dark);
-      text-align: center;
-    }
-
-    label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 6px;
-      text-align: left;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 2px solid #e2e8f0;
-      margin-bottom: 14px;
-      box-sizing: border-box;
-    }
-
-    .result {
-      background: var(--primary);
-      color: white;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 14px;
-    }
-
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 42px;
-      height: 42px;
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #0c8c8b;
-    }
-
-    .history-card {
-      width: 300px;
-    }
-
-    .history-card input {
-      margin-bottom: 10px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    li {
-      background: #e2e8f0;
-      border-radius: 10px;
-      padding: 8px;
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-    }
-
-    li.best {
-      background: var(--best);
-      font-weight: bold;
-    }
-
-    .info {
-      flex: 1;
-    }
-
-    .name {
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .value {
-      font-size: 13px;
-      color: #334155;
-    }
-
-    .actions button {
-      width: 26px;
-      height: 26px;
-      font-size: 14px;
-      border-radius: 50%;
-    }
-  </style>
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .row:last-child { border-bottom: none; }
+        label { flex: 1; font-weight: 600; color: #444; }
+        input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            text-align: right;
+            font-size: 1em;
+        }
+        #total {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.4em;
+            margin-top: 25px;
+            padding: 15px;
+            background: #e0e7ff;
+            color: #1e3a8a;
+            border-radius: 8px;
+            border: 2px solid #c7d2fe;
+        }
+        .save-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #ccc;
+            display: flex;
+            gap: 10px;
+        }
+        #save-name { flex: 2; text-align: left; }
+        #save-btn {
+            flex: 1;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .saved-list { margin-top: 20px; list-style: none; padding: 0; }
+        .saved-item {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 <body>
+    <h1>Artifact Value</h1>
+    
+    <div class="container">
+        <div class="alert-box alert-info" id="info-box">
+            <span class="close-alert" onclick="closeInfoBox()">&times;</span>
+            <span id="info-text"></span>
+        </div>
+        
+        <div class="alert-box alert-warning" id="warning-box">
+            <span class="close-alert" onclick="closeWarningBox()">&times;</span>
+            <span id="warning-text"></span>
+        </div>
 
-  <main class="card">
-    <h1>Crit Value Calculator</h1>
+        <div id="inputs-container">
+            </div>
 
-    <label>Name (optional)</label>
-    <input id="name" placeholder="Build name">
+        <div id="total">Total Value: 0.00</div>
 
-    <label>Crit Rate</label>
-    <input id="rate" type="number">
+        <div class="save-section">
+            <input type="text" id="save-name" placeholder="Name (Optional)">
+            <button id="save-btn" onclick="saveResult()">Save</button>
+        </div>
 
-    <label>Crit Damage</label>
-    <input id="dmg" type="number">
+        <ul id="saved-list" class="saved-list"></ul>
+    </div>
 
-    <div id="output" class="result">—</div>
-
-    <button id="addBtn">+</button>
-  </main>
-
-  <aside class="history-card">
-    <h2>History</h2>
-
-    <input id="search" placeholder="Search by name 🔍">
-
-    <ul id="historyList"></ul>
-  </aside>
-
-  <script>
-    const nameEl = document.getElementById('name');
-    const rateEl = document.getElementById('rate');
-    const dmgEl = document.getElementById('dmg');
-    const out = document.getElementById('output');
-    const addBtn = document.getElementById('addBtn');
-    const historyList = document.getElementById('historyList');
-    const searchEl = document.getElementById('search');
-
-    const STORAGE_KEY = 'crit_history_advanced';
-    let historyData = [];
-
-    function parseNumber(v) {
-      if (!v) return NaN;
-      return Number(String(v).replace(',', '.'));
-    }
-
-    function formatValue(v) {
-      return Number.isInteger(v) ? v : v.toFixed(4).replace(/\.?0+$/, '');
-    }
-
-    function calculate() {
-      const r = parseNumber(rateEl.value);
-      const d = parseNumber(dmgEl.value);
-      if (isNaN(r) && isNaN(d)) {
-        out.textContent = '—';
-        return null;
-      }
-      let val = isNaN(d) ? r * 2 : isNaN(r) ? d : (r * 2 + d);
-      out.textContent = formatValue(val);
-      return val;
-    }
-
-    function save() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(historyData));
-    }
-
-    function load() {
-      historyData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      render();
-    }
-
-    function render() {
-      historyList.innerHTML = '';
-      const best = Math.max(...historyData.map(i => i.value), -Infinity);
-
-      historyData.forEach((item, index) => {
-        if (!item.name.toLowerCase().includes(searchEl.value.toLowerCase())) return;
-
-        const li = document.createElement('li');
-        if (item.value === best) li.classList.add('best');
-
-        li.innerHTML = `
-          <div class="info">
-            <div class="name" title="Click to edit">${item.name || 'Unnamed'}</div>
-            <div class="value">${formatValue(item.value)}</div>
-          </div>
-          <div class="actions">
-            <button title="Delete">🗑️</button>
-          </div>
-        `;
-
-        li.querySelector('.name').onclick = () => {
-          const newName = prompt('Edit name:', item.name);
-          if (newName !== null) {
-            item.name = newName.trim();
-            save();
-            render();
-          }
+    <script>
+        const divisors = {
+            'crit_damage': 1.0, 'crit_rate': 0.5, 'atk_percent': 0.7491,
+            'hp_percent': 0.7491, 'er': 0.8327, 'dmg_bonus': 0.7491,
+            'em': 3.0064, 'healing_bonus': 0.5771, 'def_percent': 0.9372,
+            'flat_atk': 5.0, 'flat_hp': 76.848
         };
 
-        li.querySelector('button').onclick = () => {
-          historyData.splice(index, 1);
-          save();
-          render();
+        const translations = {
+            ar: {
+                info: "<strong>تنويه:</strong> تم انشاء هذا الموقع ليساعدك في اختيار الارتفاكت المناسب حيث يكشف لك قيمة القطعة كاملة.",
+                warning: "<strong>تحذير مهم:</strong> متحسبش اي stat الشخصية مش بتسكيل بيه. مثلاً: مافويكا بتسكيل بـ ATK, EM, Crit فقط، لا تحسب HP أو DEF للحصول على أفضل دقة.",
+                saveBtn: "حفظ النتيجة",
+                placeholder: "الاسم (اختياري)"
+            },
+            en: {
+                info: "<strong>Notice:</strong> This site was created to help you choose the right artifact by showing the total value of the piece.",
+                warning: "<strong>Important Warning:</strong> Do not calculate stats that the character does not scale with. E.g., Mavuika scales with ATK, EM, Crit only; don't include HP or DEF for best accuracy.",
+                saveBtn: "Save Result",
+                placeholder: "Name (Optional)"
+            }
         };
 
-        historyList.appendChild(li);
-      });
-    }
+        let currentTotal = 0;
 
-    function addToHistory() {
-      const value = calculate();
-      if (value == null) return;
+        function initApp() {
+            // اكتشاف اللغة (هل تبدأ بـ ar)
+            const userLang = navigator.language || navigator.userLanguage;
+            const lang = userLang.startsWith('ar') ? 'ar' : 'en';
+            
+            // تطبيق النصوص والاتجاهات
+            const infoBox = document.getElementById('info-box');
+            const warningBox = document.getElementById('warning-box');
+            
+            infoBox.classList.add(lang === 'ar' ? 'rtl' : 'ltr');
+            warningBox.classList.add(lang === 'ar' ? 'rtl' : 'ltr');
+            
+            document.getElementById('info-text').innerHTML = translations[lang].info;
+            document.getElementById('warning-text').innerHTML = translations[lang].warning;
+            document.getElementById('save-btn').innerText = translations[lang].saveBtn;
+            document.getElementById('save-name').placeholder = translations[lang].placeholder;
 
-      historyData.unshift({
-        name: nameEl.value.trim(),
-        value
-      });
+            // إنشاء الحقول
+            const container = document.getElementById('inputs-container');
+            Object.keys(divisors).forEach(id => {
+                const labelText = id.replace('_', ' ').toUpperCase();
+                container.innerHTML += `
+                    <div class="row">
+                        <label>${labelText}:</label>
+                        <input type="number" id="${id}" step="any" oninput="calculateTotal()">
+                    </div>
+                `;
+            });
 
-      save();
-      render();
+            // التحقق من حالة الإغلاق المخزنة للتنويه
+            if (localStorage.getItem('hideArtifactInfoBox') === 'true') {
+                infoBox.style.display = 'none';
+            }
 
-      nameEl.value = rateEl.value = dmgEl.value = '';
-      out.textContent = '—';
-    }
+            loadSavedData();
+        }
 
-    rateEl.oninput = dmgEl.oninput = calculate;
-    addBtn.onclick = addToHistory;
-    searchEl.oninput = render;
+        function calculateTotal() {
+            let totalValue = 0;
+            for (const [id, divisor] of Object.entries(divisors)) {
+                const val = parseFloat(document.getElementById(id).value);
+                if (!isNaN(val)) totalValue += val / divisor;
+            }
+            currentTotal = totalValue;
+            document.getElementById('total').innerText = 'Total Value: ' + totalValue.toFixed(3);
+        }
 
-    load();
-  </script>
+        function closeInfoBox() {
+            document.getElementById('info-box').style.display = 'none';
+            localStorage.setItem('hideArtifactInfoBox', 'true');
+        }
 
+        function closeWarningBox() {
+            document.getElementById('warning-box').style.display = 'none';
+        }
+
+        function saveResult() {
+            if (currentTotal === 0) return;
+            let nameInput = document.getElementById('save-name').value.trim();
+            let savedData = JSON.parse(localStorage.getItem('artifactResults')) || [];
+
+            if (!nameInput) {
+                let counter = 1;
+                while (savedData.map(i => i.name).includes(counter.toString())) counter++;
+                nameInput = counter.toString();
+            } else if (savedData.map(i => i.name).includes(nameInput)) {
+                alert("Name exists!"); return;
+            }
+
+            savedData.push({ name: nameInput, value: currentTotal.toFixed(3) });
+            localStorage.setItem('artifactResults', JSON.stringify(savedData));
+            loadSavedData();
+            document.getElementById('save-name').value = '';
+        }
+
+        function loadSavedData() {
+            const list = document.getElementById('saved-list');
+            list.innerHTML = '';
+            const savedData = JSON.parse(localStorage.getItem('artifactResults')) || [];
+            savedData.forEach((item, index) => {
+                list.innerHTML += `
+                    <li class="saved-item">
+                        <span>${item.name}: <strong>${item.value}</strong></span>
+                        <button class="delete-btn" onclick="deleteItem(${index})">X</button>
+                    </li>
+                `;
+            });
+        }
+
+        function deleteItem(index) {
+            let savedData = JSON.parse(localStorage.getItem('artifactResults')) || [];
+            savedData.splice(index, 1);
+            localStorage.setItem('artifactResults', JSON.stringify(savedData));
+            loadSavedData();
+        }
+
+        window.onload = initApp;
+    </script>
 </body>
 </html>
