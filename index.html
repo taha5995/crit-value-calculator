@@ -27,24 +27,15 @@
         /* تنسيقات رسائل التنبيه والتحذير */
         .alert-box {
             padding: 12px 15px;
-            padding-left: 30px; 
+            padding-left: 30px; /* مساحة لزر الإغلاق */
             border-radius: 8px;
             margin-bottom: 15px;
             font-size: 0.95em;
             line-height: 1.5;
-            position: relative;
-        }
-        
-        /* لضبط الاتجاه تلقائياً بناءً على اللغة */
-        .rtl {
             text-align: right;
             direction: rtl;
+            position: relative; /* ضروري لتموضع زر الإغلاق */
         }
-        .ltr {
-            text-align: left;
-            direction: ltr;
-        }
-
         .alert-info {
             background-color: #e3f2fd;
             color: #084298;
@@ -56,9 +47,11 @@
             border: 1px solid #ffecb5;
         }
 
+        /* تنسيق زر الإغلاق X */
         .close-alert {
             position: absolute;
             top: 5px;
+            left: 10px; /* يظهر على اليسار لأن النص عربي يمين */
             font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
@@ -66,11 +59,9 @@
             transition: opacity 0.3s;
             line-height: 1;
         }
-        /* زر الإغلاق يمين في الإنجليزي ويسار في العربي */
-        .ltr .close-alert { right: 10px; }
-        .rtl .close-alert { left: 10px; }
-
-        .close-alert:hover { opacity: 1; }
+        .close-alert:hover {
+            opacity: 1;
+        }
 
         .row {
             display: flex;
@@ -80,8 +71,15 @@
             padding-bottom: 5px;
             border-bottom: 1px solid #eee;
         }
-        .row:last-child { border-bottom: none; }
-        label { flex: 1; font-weight: 600; color: #444; }
+        .row:last-child {
+            border-bottom: none;
+        }
+        label {
+            flex: 1;
+            font-weight: 600;
+            color: #444;
+            text-transform: capitalize;
+        }
         input {
             flex: 1;
             padding: 8px 12px;
@@ -89,6 +87,16 @@
             border-radius: 6px;
             text-align: right;
             font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
         #total {
             text-align: center;
@@ -101,6 +109,8 @@
             border-radius: 8px;
             border: 2px solid #c7d2fe;
         }
+
+        /* تنسيقات قسم الحفظ */
         .save-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -108,7 +118,10 @@
             display: flex;
             gap: 10px;
         }
-        #save-name { flex: 2; text-align: left; }
+        #save-name {
+            flex: 2;
+            text-align: left;
+        }
         #save-btn {
             flex: 1;
             background-color: #28a745;
@@ -117,8 +130,18 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            padding: 10px;
         }
-        .saved-list { margin-top: 20px; list-style: none; padding: 0; }
+        #save-btn:hover {
+            background-color: #218838;
+        }
+
+        /* تنسيقات قائمة المحفوظات */
+        .saved-list {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+        }
         .saved-item {
             background: #f8f9fa;
             border: 1px solid #ddd;
@@ -129,6 +152,9 @@
             justify-content: space-between;
             align-items: center;
         }
+        .saved-item span {
+            font-weight: 500;
+        }
         .delete-btn {
             background: #dc3545;
             color: white;
@@ -136,6 +162,8 @@
             padding: 5px 10px;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -145,22 +173,66 @@
     <div class="container">
         <div class="alert-box alert-info" id="info-box">
             <span class="close-alert" onclick="closeInfoBox()">&times;</span>
-            <span id="info-text"></span>
+            <strong>تنويه:</strong> تم انشاء هذا الموقع ليساعدك في اختيار الارتفاكت المناسب حيث يكشف لك قيمة القطعة كاملة.
         </div>
         
         <div class="alert-box alert-warning" id="warning-box">
             <span class="close-alert" onclick="closeWarningBox()">&times;</span>
-            <span id="warning-text"></span>
+            <strong>تحذير مهم:</strong> متحسبش اي stat الشخصية مش بتسكيل بيه. 
+            <br>
+            مثلاً: <strong>مافويكا (Mavuika)</strong> بتسكيل بـ ATK, EM, Crit فقط، لذلك لا تقم بحساب HP أو DEF معها للحصول على أفضل دقة.
         </div>
 
-        <div id="inputs-container">
-            </div>
+        <div class="row">
+            <label>Crit Damage:</label>
+            <input type="number" id="crit_damage" step="any">
+        </div>
+        <div class="row">
+            <label>Crit Rate:</label>
+            <input type="number" id="crit_rate" step="any">
+        </div>
+        <div class="row">
+            <label>ATK%:</label>
+            <input type="number" id="atk_percent" step="any">
+        </div>
+        <div class="row">
+            <label>HP%:</label>
+            <input type="number" id="hp_percent" step="any">
+        </div>
+        <div class="row">
+            <label>ER:</label>
+            <input type="number" id="er" step="any">
+        </div>
+        <div class="row">
+            <label>Dmg Bonus:</label>
+            <input type="number" id="dmg_bonus" step="any">
+        </div>
+        <div class="row">
+            <label>EM:</label>
+            <input type="number" id="em" step="any">
+        </div>
+        <div class="row">
+            <label>Healing Bonus:</label>
+            <input type="number" id="healing_bonus" step="any">
+        </div>
+        <div class="row">
+            <label>DEF%:</label>
+            <input type="number" id="def_percent" step="any">
+        </div>
+        <div class="row">
+            <label>Flat ATK:</label>
+            <input type="number" id="flat_atk" step="any">
+        </div>
+        <div class="row">
+            <label>Flat HP:</label>
+            <input type="number" id="flat_hp" step="any">
+        </div>
 
         <div id="total">Total Value: 0.00</div>
 
         <div class="save-section">
             <input type="text" id="save-name" placeholder="Name (Optional)">
-            <button id="save-btn" onclick="saveResult()">Save</button>
+            <button id="save-btn" onclick="saveResult()">Save Result</button>
         </div>
 
         <ul id="saved-list" class="saved-list"></ul>
@@ -168,115 +240,124 @@
 
     <script>
         const divisors = {
-            'crit_damage': 1.0, 'crit_rate': 0.5, 'atk_percent': 0.7491,
-            'hp_percent': 0.7491, 'er': 0.8327, 'dmg_bonus': 0.7491,
-            'em': 3.0064, 'healing_bonus': 0.5771, 'def_percent': 0.9372,
-            'flat_atk': 5.0, 'flat_hp': 76.848
-        };
-
-        const translations = {
-            ar: {
-                info: "<strong>تنويه:</strong> تم انشاء هذا الموقع ليساعدك في اختيار الارتفاكت المناسب حيث يكشف لك قيمة القطعة كاملة.",
-                warning: "<strong>تحذير مهم:</strong> متحسبش اي stat الشخصية مش بتسكيل بيه. مثلاً: مافويكا بتسكيل بـ ATK, EM, Crit فقط، لا تحسب HP أو DEF للحصول على أفضل دقة.",
-                saveBtn: "حفظ النتيجة",
-                placeholder: "الاسم (اختياري)"
-            },
-            en: {
-                info: "<strong>Notice:</strong> This site was created to help you choose the right artifact by showing the total value of the piece.",
-                warning: "<strong>Important Warning:</strong> Do not calculate stats that the character does not scale with. E.g., Mavuika scales with ATK, EM, Crit only; don't include HP or DEF for best accuracy.",
-                saveBtn: "Save Result",
-                placeholder: "Name (Optional)"
-            }
+            'crit_damage': 1.0,
+            'crit_rate': 0.5,
+            'atk_percent': 0.7491961414790997,
+            'hp_percent': 0.7491961414790997,
+            'er': 0.8327974276527331,
+            'dmg_bonus': 0.7491961414790997,
+            'em': 3.006430868167203,
+            'healing_bonus': 0.5771704180064309,
+            'def_percent': 0.9372990353697749,
+            'flat_atk': 5.0,
+            'flat_hp': 76.84887459807074
         };
 
         let currentTotal = 0;
 
-        function initApp() {
-            // اكتشاف اللغة (هل تبدأ بـ ar)
-            const userLang = navigator.language || navigator.userLanguage;
-            const lang = userLang.startsWith('ar') ? 'ar' : 'en';
-            
-            // تطبيق النصوص والاتجاهات
-            const infoBox = document.getElementById('info-box');
-            const warningBox = document.getElementById('warning-box');
-            
-            infoBox.classList.add(lang === 'ar' ? 'rtl' : 'ltr');
-            warningBox.classList.add(lang === 'ar' ? 'rtl' : 'ltr');
-            
-            document.getElementById('info-text').innerHTML = translations[lang].info;
-            document.getElementById('warning-text').innerHTML = translations[lang].warning;
-            document.getElementById('save-btn').innerText = translations[lang].saveBtn;
-            document.getElementById('save-name').placeholder = translations[lang].placeholder;
-
-            // إنشاء الحقول
-            const container = document.getElementById('inputs-container');
-            Object.keys(divisors).forEach(id => {
-                const labelText = id.replace('_', ' ').toUpperCase();
-                container.innerHTML += `
-                    <div class="row">
-                        <label>${labelText}:</label>
-                        <input type="number" id="${id}" step="any" oninput="calculateTotal()">
-                    </div>
-                `;
-            });
-
-            // التحقق من حالة الإغلاق المخزنة للتنويه
-            if (localStorage.getItem('hideArtifactInfoBox') === 'true') {
-                infoBox.style.display = 'none';
-            }
-
-            loadSavedData();
-        }
-
         function calculateTotal() {
             let totalValue = 0;
+
             for (const [id, divisor] of Object.entries(divisors)) {
-                const val = parseFloat(document.getElementById(id).value);
-                if (!isNaN(val)) totalValue += val / divisor;
+                const inputElement = document.getElementById(id);
+                const inputValue = parseFloat(inputElement.value);
+
+                if (!isNaN(inputValue)) {
+                    totalValue += inputValue / divisor;
+                }
             }
+            
             currentTotal = totalValue;
             document.getElementById('total').innerText = 'Total Value: ' + totalValue.toFixed(3);
         }
 
+        Object.keys(divisors).forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateTotal);
+        });
+
+        // ---------------------------------------------------------
+        // دوال إغلاق التنبيهات
+        // ---------------------------------------------------------
+        
+        // التحقق عند تحميل الصفحة ما إذا كان التنويه مغلقاً سابقاً
+        document.addEventListener('DOMContentLoaded', () => {
+            // تحميل قائمة النتائج
+            loadSavedData();
+
+            // التحقق من حالة التنويه (Info Box)
+            const isInfoHidden = localStorage.getItem('hideArtifactInfoBox');
+            if (isInfoHidden === 'true') {
+                document.getElementById('info-box').style.display = 'none';
+            }
+        });
+
+        // إغلاق التنويه وحفظ الحالة (لن يظهر مرة أخرى)
         function closeInfoBox() {
             document.getElementById('info-box').style.display = 'none';
             localStorage.setItem('hideArtifactInfoBox', 'true');
         }
 
+        // إغلاق التحذير فقط (سيظهر مرة أخرى عند التحديث)
         function closeWarningBox() {
             document.getElementById('warning-box').style.display = 'none';
+            // لا نقوم بحفظ أي شيء في localStorage هنا
         }
 
+        // ---------------------------------------------------------
+        // كود الحفظ والـ Local Storage للنتائج
+        // ---------------------------------------------------------
+
         function saveResult() {
-            if (currentTotal === 0) return;
+            if (currentTotal === 0) {
+                alert("Please calculate a value first!");
+                return;
+            }
+
             let nameInput = document.getElementById('save-name').value.trim();
             let savedData = JSON.parse(localStorage.getItem('artifactResults')) || [];
 
             if (!nameInput) {
                 let counter = 1;
-                while (savedData.map(i => i.name).includes(counter.toString())) counter++;
-                nameInput = counter.toString();
-            } else if (savedData.map(i => i.name).includes(nameInput)) {
-                alert("Name exists!"); return;
+                let newName = counter.toString();
+                
+                const existingNames = savedData.map(item => item.name);
+                while (existingNames.includes(newName)) {
+                    counter++;
+                    newName = counter.toString();
+                }
+                nameInput = newName;
+            } else {
+                const existingNames = savedData.map(item => item.name);
+                if (existingNames.includes(nameInput)) {
+                    alert("This name is already used. Please choose another.");
+                    return;
+                }
             }
 
-            savedData.push({ name: nameInput, value: currentTotal.toFixed(3) });
+            savedData.push({
+                name: nameInput,
+                value: currentTotal.toFixed(3)
+            });
+
             localStorage.setItem('artifactResults', JSON.stringify(savedData));
             loadSavedData();
             document.getElementById('save-name').value = '';
         }
 
         function loadSavedData() {
-            const list = document.getElementById('saved-list');
-            list.innerHTML = '';
+            const listElement = document.getElementById('saved-list');
+            listElement.innerHTML = '';
+            
             const savedData = JSON.parse(localStorage.getItem('artifactResults')) || [];
+
             savedData.forEach((item, index) => {
-                list.innerHTML += `
-                    <li class="saved-item">
-                        <span>${item.name}: <strong>${item.value}</strong></span>
-                        <button class="delete-btn" onclick="deleteItem(${index})">X</button>
-                    </li>
+                const li = document.createElement('li');
+                li.className = 'saved-item';
+                li.innerHTML = `
+                    <span>${item.name}: <strong>${item.value}</strong></span>
+                    <button class="delete-btn" onclick="deleteItem(${index})">X</button>
                 `;
+                listElement.appendChild(li);
             });
         }
 
@@ -286,8 +367,6 @@
             localStorage.setItem('artifactResults', JSON.stringify(savedData));
             loadSavedData();
         }
-
-        window.onload = initApp;
     </script>
 </body>
 </html>
